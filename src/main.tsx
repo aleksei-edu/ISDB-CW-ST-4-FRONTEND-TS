@@ -8,24 +8,23 @@ import LoginForm from './components/pages/LoginForm';
 import store from './store/index'
 import { Provider } from 'react-redux';
 import MainPage from './components/pages/MainPage/MainPage';
+import App from './App';
+import Cart from './components/pages/Cart';
+import Navbar from './components/Navbar/Navbar';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <LoginForm />,
+    element: <App />,
     errorElement: <ErrorPage />,
-  },
-  {
-    path: "login",
-    element: <LoginForm />,
-  },
-  {
-    path: "register",
-    element: <RegistrationForm />,
-  },
-  {
-    path: "main",
-    element: <MainPage />,
+    children: [
+      { path: "sign-in", element: <LoginForm /> },
+      { path: "sign-up", element: <RegistrationForm /> },
+      { element: <Navbar />, children: [
+        { path: "main", element: <MainPage /> },
+        { path: "cart", element: <Cart />},
+      ] },
+    ]
   },
 ]);
 

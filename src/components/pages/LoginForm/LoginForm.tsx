@@ -1,86 +1,152 @@
-import { Link } from "react-router-dom";
-import styles from "./LoginForm.module.css";
+import { Link, useNavigate } from "react-router-dom";
+import FormContainer from "../FormContainer";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SignInFormValues, SignInSchema } from "../../../lib/types";
+import { useForm } from "react-hook-form";
+import axiosClient from "../../../utils/axiosConf";
+import { useAppDispatch } from "../../../store";
+import { setUser } from "../../../store/slice/UserSlice";
+import { Alert, Button, Form } from "react-bootstrap";
+import { OverlayTrigger, Popover } from "react-bootstrap";
+import { useCookies } from "react-cookie";
+import { useState } from "react";
+
+const popover = (
+  <Popover id="popover-basic">
+    <Popover.Header as="h3">Forgot Password</Popover.Header>
+    <Popover.Body>This is really sad.😢</Popover.Body>
+  </Popover>
+);
+
 const LoginForm: React.FC = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<SignInFormValues>({
+    resolver: zodResolver(SignInSchema),
+  });
+
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [_, setCookies] = useCookies(["token"]);
+  const [headError, setHeadError] = useState<{show: boolean, msg: string}>({show: false, msg: ""})
+
+  const handleOnSubmit = async (data: SignInFormValues) => {
+    let isCancelled = false;
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Sleep for 1000 milliseconds
+
+    axiosClient
+      .post("/auth/login", data)
+      .then((response) => {
+        if (!isCancelled) {
+          dispatch(
+            setUser({
+              username: data.username,
+              password: data.password,
+              token: response.data.token,
+            })
+          );
+          setCookies("token", response.data.token);
+          localStorage.setItem("username", data.username);
+          navigate("/main");
+        }
+      })
+      .catch((error) => {
+        if (!isCancelled && error.message) {
+          let message = error.message
+          if(error.response){
+            switch(error.response.data.type){
+              case "BAD_CREDENTIALS":
+                message = "Incorrect username or password.";
+                break;
+            }
+          }
+          setHeadError({show: true, msg: message})
+        }
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  };
   return (
-    <>
-      <section className={["vh-100", styles.gradientCustom].join(" ")}>
-        <div className="container py-5 h-100">
-          <div className="row d-flex justify-content-center align-items-center h-100">
-            <div className="col-12 col-md-8 col-lg-6 col-xl-5">
-              <div
-                className="card bg-dark text-white"
-                style={{ borderRadius: "1rem" }}
-              >
-                <div className="card-body p-5 text-center">
-                  <h2 className="fw-bold mb-2 text-uppercase">Login</h2>
-                  <p className="text-white-50 mb-5">
-                    Please enter your username and password!
-                  </p>
-                  <div className="form-floating mb-4">
-                    <input
-                      type="email"
-                      id="typeUsernameX"
-                      className="form-control form-control-lg"
-                      placeholder="username"
-                    />
-                    <label
-                      className="form-label text-black-50"
-                      htmlFor="typeUsernameX"
-                    >
-                      Username
-                    </label>
-                  </div>
-                  <div className="form-floating mb-4">
-                    <input
-                      type="password"
-                      id="typePasswordX"
-                      className="form-control form-control-lg"
-                      placeholder="password"
-                    />
-                    <label className="form-label text-black-50" htmlFor="typePasswordX">
-                      Password
-                    </label>
-                  </div>
+    <FormContainer title="Sign In">
+      {headError.show && (
+      <Alert variant="danger" onClose={() => setHeadError({...headError, show: false})} dismissible>
+        <Alert.Heading>Oh! You got an error!</Alert.Heading>
+        <p>
+          {headError.msg}
+        </p>
+      </Alert>)}
+      <Form noValidate onSubmit={handleSubmit((data) => handleOnSubmit(data))}>
+        <Form.Group className="form-floating mb-4">
+          <Form.Control
+            {...register("username")}
+            type="text"
+            id="typeUsernameX"
+            className="form-control form-control-lg"
+            placeholder="username"
+            isInvalid={!!errors.username}
+          />
+          <Form.Control.Feedback type="invalid">
+            {errors.username && errors.username?.message}
+          </Form.Control.Feedback>
+          <Form.Label
+            className="form-label text-black-50"
+            htmlFor="typeUsernameX"
+          >
+            Username
+          </Form.Label>
+        </Form.Group>
 
-                  <p className="small mb-5 pb-lg-2">
-                    <a className="text-white-50" href="#!">
-                      Forgot password?
-                    </a>
-                  </p>
+        <Form.Group className="form-floating mb-4">
+          <Form.Control
+            {...register("password")}
+            type="password"
+            id="typePasswordX"
+            className="form-control form-control-lg"
+            placeholder="password"
+            isInvalid={!!errors.password}
+          />
+          <Form.Control.Feedback type="invalid">
+            {errors.password && errors.password?.message}
+          </Form.Control.Feedback>
+          <Form.Label className="form-label text-black-50">Password</Form.Label>
+        </Form.Group>
 
-                  <button
-                    className="btn btn-outline-light btn-lg px-5"
-                    type="submit"
-                  >
-                    Login
-                  </button>
+        <OverlayTrigger trigger="click" placement="bottom" overlay={popover}>
+          <p className="small mb-3 pb-lg-2">
+            <a className="text-white-50">Forgot password?</a>
+          </p>
+        </OverlayTrigger>
 
-                  <div className="d-flex justify-content-center text-center mt-4 pt-1">
-                    <a href="#!" className="text-white">
-                      <i className="fab fa-facebook-f fa-lg"></i>
-                    </a>
-                    <a href="#!" className="text-white">
-                      <i className="fab fa-twitter fa-lg mx-4 px-2"></i>
-                    </a>
-                    <a href="#!" className="text-white">
-                      <i className="fab fa-google fa-lg"></i>
-                    </a>
-                  </div>
-                  <div>
-                    <p className="mb-0">
-                      Don't have an account?{" "}
-                      <Link to={"/register"} className="text-white-50 fw-bold">
-                        Sign Up 
-                        </Link>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <Button
+          variant="outline-light"
+          className="btn btn-outline-light btn-lg px-5"
+          type="submit"
+          disabled={isSubmitting}
+        >
+          {!isSubmitting && <>Sign In</>}
+          {isSubmitting && (
+            <>
+              <span className="spinner-grow spinner-grow-sm"></span>
+              <span role="status">Sending...</span>
+            </>
+          )}
+        </Button>
+
+        <div>
+          <p className="mb-0">
+            Don't have an account?{" "}
+            <Link to={"/sign-up"} className="text-white-50 fw-bold">
+              Sign Up
+            </Link>
+          </p>
         </div>
-      </section>
-    </>
+      </Form>
+    </FormContainer>
   );
 };
 export default LoginForm;

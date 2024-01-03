@@ -1,139 +1,152 @@
 import { Link, useNavigate } from "react-router-dom";
-import styles from "./RegistrationForm.module.css";
+import Form from "react-bootstrap/Form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axiosClient from "../../../utils/axiosConf";
-import { z } from "zod";
-import { useAppDispatch, useAppSelector } from "../../../store";
+import { useAppDispatch } from "../../../store";
 import { setUser } from "../../../store/slice/UserSlice";
-const schema = z.object({
-  username: z
-    .string()
-    .min(3, { message: "Username must contain at least 3 characters" })
-    .max(20, { message: "Username must be less than 20 characters" }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters" })
-    .max(100, { message: "Password must be less than 100 characters" }),
-});
-
-type FormValues = z.infer<typeof schema>;
+import { SignUpFormValues, SignUpSchema } from "../../../lib/types";
+import FormContainer from "../FormContainer/FormContainer";
+import { Alert, Button } from "react-bootstrap";
+import { useState } from "react";
 
 const RegistrationForm: React.FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<SignUpFormValues>({
+    resolver: zodResolver(SignUpSchema),
   });
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [headError, setHeadError] = useState<{show: boolean, msg: string}>({show: false, msg: ""})
 
-  const handleOnSubmit = async (data: FormValues) => {
+  const handleOnSubmit = async (data: SignUpFormValues) => {
+    let isCancelled = false;
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Sleep for 1000 milliseconds
+
     axiosClient
       .post("/auth/register", data)
       .then((response) => {
-        dispatch(
-          setUser({
-            username: data.username,
-            password: data.password,
-            token: response.data.token,
-          })
-        );
-        navigate("/main");
+        if (!isCancelled) {
+          dispatch(
+            setUser({
+              username: data.username,
+              password: data.password,
+              token: response.data.token,
+            })
+          );
+          navigate("/main");
+        }
       })
       .catch((error) => {
-        console.log(error);
+        if (!isCancelled && error.message) {
+          let message = error.message
+          if(error.response){
+            switch(error.response.data.type){
+              case "BAD_CREDENTIALS":
+                message = "Incorrect username or password.";
+                break;
+            }
+          }
+          setHeadError({show: true, msg: message})
+        }
       });
+
+    return () => {
+      isCancelled = true;
+    };
   };
 
   return (
     <>
-      <section className={["vh-100", styles.gradientCustom].join(" ")}>
-        <div className="container py-5 h-100">
-          <div className="row d-flex justify-content-center align-items-center h-100">
-            <div className="col-12 col-md-8 col-lg-6 col-xl-5">
-              <div
-                className="card bg-dark text-white"
-                style={{ borderRadius: "1rem" }}
-              >
-                <div className="card-body p-5 text-center">
-                  <h2 className="fw-bold mb-2 text-uppercase">Sign up</h2>
-                  <p className="text-white-50 mb-5">
-                    Please enter username and password!
-                  </p>
-                  <form onSubmit={handleSubmit((data) => handleOnSubmit(data))}>
-                    <div className="form-floating mb-4">
-                      <input
-                        {...register("username")}
-                        type="text"
-                        id="typeUsernameX"
-                        className="form-control form-control-lg"
-                        placeholder="username"
-                      />
-                      <label
-                        className="form-label text-black-50"
-                        htmlFor="typeUsernameX"
-                      >
-                        Username
-                      </label>
-                      {errors.username && (
-                        <p className="text-danger">{errors.username.message}</p>
-                      )}
-                    </div>
-                    <div className="form-floating mb-4">
-                      <input
-                        {...register("password")}
-                        type="password"
-                        id="typePasswordX"
-                        className="form-control form-control-lg"
-                        placeholder="password"
-                      />
-                      <label
-                        className="form-label text-black-50"
-                        htmlFor="typePasswordX"
-                      >
-                        Password
-                      </label>
-                      {errors.password && (
-                        <p className="text-danger">{errors.password.message}</p>
-                      )}
-                    </div>
-
-                    <button
-                      className="btn btn-outline-light btn-lg px-5"
-                      type="submit"
-                    >
-                      Sign Up
-                    </button>
-                  </form>
-                  <div className="d-flex justify-content-center text-center mt-4 pt-1">
-                    <a href="#!" className="text-white">
-                      <i className="fab fa-facebook-f fa-lg"></i>
-                    </a>
-                    <a href="#!" className="text-white">
-                      <i className="fab fa-twitter fa-lg mx-4 px-2"></i>
-                    </a>
-                    <a href="#!" className="text-white">
-                      <i className="fab fa-google fa-lg"></i>
-                    </a>
-                  </div>
-                  <div>
-                    <p className="mb-0">
-                      Already have an account?{" "}
-                      <Link to={"/login"} className="text-white-50 fw-bold">
-                        Login
-                      </Link>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      <FormContainer title="Sign Up">
+        {headError.show && (
+        <Alert variant="danger" onClose={() => setHeadError({...headError, show: false})} dismissible>
+          <Alert.Heading>Oh! You got an error!</Alert.Heading>
+          <p>
+            {headError.msg}
+          </p>
+        </Alert>)}
+        <Form
+          noValidate
+          onSubmit={handleSubmit((data) => handleOnSubmit(data))}
+        >
+          <Form.Group className="form-floating mb-4">
+            <Form.Control
+              {...register("username")}
+              type="text"
+              id="typeUsernameX"
+              className="form-control form-control-lg"
+              placeholder="username"
+              isInvalid={!!errors.username}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.username && errors.username?.message}
+            </Form.Control.Feedback>
+            <Form.Label className="form-label text-black-50">
+              Username
+            </Form.Label>
+          </Form.Group>
+          <Form.Group className="form-floating mb-4">
+            <Form.Control
+              {...register("password")}
+              type="password"
+              id="typePasswordX"
+              className="form-control form-control-lg"
+              placeholder="password"
+              isInvalid={!!errors.password}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.password && errors.password?.message}
+            </Form.Control.Feedback>
+            <Form.Label className="form-label text-black-50">
+              Password
+            </Form.Label>
+          </Form.Group>
+          <Form.Group className="form-floating mb-4">
+            <Form.Control
+              {...register("confirmPassword")}
+              type="password"
+              id="typeconfirmPasswordX"
+              className="form-control form-control-lg"
+              placeholder="Confirm Password"
+              isInvalid={!!errors.confirmPassword}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.confirmPassword && errors.confirmPassword?.message}
+            </Form.Control.Feedback>
+            <Form.Label className="form-label text-black-50">
+              Confirm Password
+            </Form.Label>
+          </Form.Group>
+          <Button
+            variant="outline-light"
+            className="btn btn-outline-light btn-lg px-5"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {!isSubmitting && <>Sign Up</>}
+            {isSubmitting && (
+              <>
+                <span className="spinner-grow spinner-grow-sm"></span>
+                <span role="status">Sending...</span>
+              </>
+            )}
+          </Button>
+        </Form>
+        <div>
+          <p className="mb-0">
+            Already have an account?{" "}
+            <Link to={"/sign-in"} className="text-white-50 fw-bold">
+              Login
+            </Link>
+          </p>
         </div>
-      </section>
+      </FormContainer>
     </>
   );
 };

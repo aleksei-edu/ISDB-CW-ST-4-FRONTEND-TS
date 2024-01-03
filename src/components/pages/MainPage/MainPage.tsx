@@ -1,6 +1,7 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { User } from "../../../store/slice/UserApi";
+import Navbar from "../../Navbar/Navbar";
 
 const MainPage: React.FC = () => {
   const user: User = useAppSelector((state) => state.user);
