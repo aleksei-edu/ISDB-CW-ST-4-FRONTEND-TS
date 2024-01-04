@@ -41,6 +41,14 @@ const LoginForm: React.FC = () => {
       .post("/auth/login", data)
       .then((response) => {
         if (!isCancelled) {
+          if(response.data.code){
+            if(response.data.code === 1){
+              if(response.data.type === "USERNAME_IN_USE"){
+                setError("username", {message: "Username already in use."})
+                return;
+              }
+            }
+          }
           dispatch(
             setUser({
               username: data.username,
