@@ -47,7 +47,7 @@ const RegistrationForm: React.FC = () => {
               token: response.data.token,
             })
           );
-          navigate("/main");
+          navigate("/shop");
         }
       })
       .catch((error) => {

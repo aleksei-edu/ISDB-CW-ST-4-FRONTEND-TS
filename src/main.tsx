@@ -7,10 +7,11 @@ import ErrorPage from "./components/pages/ErrorPage";
 import LoginForm from './components/pages/LoginForm';
 import store from './store/index'
 import { Provider } from 'react-redux';
-import MainPage from './components/pages/MainPage/MainPage';
+import ShopPage from './components/pages/ShopPage/ShopPage';
 import App from './App';
 import Cart from './components/pages/Cart';
 import Navbar from './components/Navbar/Navbar';
+import Root from './components/pages/Root';
 
 const router = createBrowserRouter([
   {
@@ -20,10 +21,15 @@ const router = createBrowserRouter([
     children: [
       { path: "sign-in", element: <LoginForm /> },
       { path: "sign-up", element: <RegistrationForm /> },
-      { element: <Navbar />, children: [
-        { path: "main", element: <MainPage /> },
-        { path: "cart", element: <Cart />},
-      ] },
+      { element: <Root />, children: [
+        {
+          element: <Navbar />, children: [
+            { path: "shop", element: <ShopPage /> },
+            { path: "cart", element: <Cart />},
+          ]
+        }
+        ]
+      },
     ]
   },
 ]);

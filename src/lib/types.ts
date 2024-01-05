@@ -30,3 +30,13 @@ export const SignInSchema = z.object({
 });
 
 export type SignInFormValues = z.infer<typeof SignInSchema>;
+
+export type Product = {
+  id: number;
+  name: string;
+  nationalNum: number;
+  pokemonImageLink: string;
+  types: string[];
+  price: number;
+  quantity: string;
+};
