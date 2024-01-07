@@ -35,8 +35,6 @@ const LoginForm: React.FC = () => {
 
   const handleOnSubmit = async (data: SignInFormValues) => {
     let isCancelled = false;
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Sleep for 1000 milliseconds
-
     axiosClient
       .post("/auth/login", data)
       .then((response) => {

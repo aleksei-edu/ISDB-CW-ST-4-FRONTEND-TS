@@ -78,7 +78,7 @@ const Navbar = ({children}) => {
           </Nav>
         </Container>
       </BNav>
-      <div className="pt-5 mt-3 mx-3">
+      <div className="pt-5 mt-4 mx-5">
       {children}
       </div>
     </>
