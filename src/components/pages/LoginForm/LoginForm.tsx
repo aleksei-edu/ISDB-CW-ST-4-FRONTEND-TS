@@ -30,7 +30,7 @@ const LoginForm: React.FC = () => {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [_, setCookies] = useCookies(["token"]);
+  const [_, setCookies] = useCookies(["token"], { maxAge: 86400 });
   const [headError, setHeadError] = useState<{show: boolean, msg: string}>({show: false, msg: ""})
 
   const handleOnSubmit = async (data: SignInFormValues) => {

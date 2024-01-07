@@ -9,6 +9,7 @@ import { SignUpFormValues, SignUpSchema } from "../../../lib/types";
 import FormContainer from "../FormContainer/FormContainer";
 import { Alert, Button } from "react-bootstrap";
 import { useState } from "react";
+import { useCookies } from "react-cookie";
 
 const RegistrationForm: React.FC = () => {
   const {
@@ -23,6 +24,7 @@ const RegistrationForm: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [headError, setHeadError] = useState<{show: boolean, msg: string}>({show: false, msg: ""})
+  const [_, setCookies] = useCookies(["token"], { maxAge: 86400 });
 
   const handleOnSubmit = async (data: SignUpFormValues) => {
     let isCancelled = false;
@@ -47,6 +49,8 @@ const RegistrationForm: React.FC = () => {
               token: response.data.token,
             })
           );
+          setCookies("token", response.data.token);
+          localStorage.setItem("username", data.username);
           navigate("/shop");
         }
       })

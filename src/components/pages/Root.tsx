@@ -1,10 +1,18 @@
-import { Outlet } from "react-router-dom"
-
+import { Outlet } from "react-router-dom";
+import { ShopContext, ShopContextProvider } from "../../context/ShopContext";
+import Navbar from "../Navbar/Navbar";
+import { ErrorContextProvider } from "../../context/ErrorContext";
 
 const Root = () => {
   return (
-    <Outlet />
-  )
-}
+    <ErrorContextProvider>
+        <ShopContextProvider>
+            <Navbar >
+                <Outlet />
+            </Navbar>
+        </ShopContextProvider>
+    </ErrorContextProvider>
+  );
+};
 
-export default Root
+export default Root;

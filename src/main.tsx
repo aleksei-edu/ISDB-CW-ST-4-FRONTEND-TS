@@ -12,6 +12,8 @@ import App from './App';
 import Cart from './components/pages/Cart';
 import Navbar from './components/Navbar/Navbar';
 import Root from './components/pages/Root';
+import ProfilePage from './components/pages/Profile/ProfilePage';
+import PurchasesPage from './components/pages/Purchases/PurchasesPage';
 
 const router = createBrowserRouter([
   {
@@ -22,12 +24,10 @@ const router = createBrowserRouter([
       { path: "sign-in", element: <LoginForm /> },
       { path: "sign-up", element: <RegistrationForm /> },
       { element: <Root />, children: [
-        {
-          element: <Navbar />, children: [
-            { path: "shop", element: <ShopPage /> },
-            { path: "cart", element: <Cart />},
-          ]
-        }
+          { path: "shop", element: <ShopPage /> },
+          { path: "cart", element: <Cart />},
+          { path: "profile", element: <ProfilePage />},
+          { path: "purchases", element: <PurchasesPage />}
         ]
       },
     ]
@@ -35,9 +35,9 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <Provider store={store}>
         <RouterProvider router={router} />
     </Provider>
-  </React.StrictMode>,
+  // </React.StrictMode>,
 )

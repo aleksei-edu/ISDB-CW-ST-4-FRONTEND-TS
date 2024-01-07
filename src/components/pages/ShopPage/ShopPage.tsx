@@ -11,27 +11,16 @@ import { motion } from "framer-motion";
 const ShopPage: React.FC = () => {
   const user: User = useAppSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
-  const [products, setProducts] = useState([]);
   const [error, setError] = useState({
-    isShown: true,
+    isShown: false,
     message: "12",
   });
-  useGetProducts({ setLoading: setLoading, setProducts: setProducts });
+
+  const {products} = useGetProducts({ setLoading: setLoading });
+  
 
   return (
     <>
-      <CardGroup className="mt-4 mx-5 z-0">
-        <Row xs={1} sm={2} md={4} className="g-4 mt-4 z-0">
-          {loading &&
-            Array.from({ length: 50 }).map((_, idx) => (
-              <ProductPlaceholders key={idx} />
-            ))}
-          {!loading &&
-            products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-        </Row>
-      </CardGroup>
       {error.isShown && (
         <div className="z-3">
           <motion.div
@@ -54,6 +43,18 @@ const ShopPage: React.FC = () => {
           </motion.div>
         </div>
       )}
+      <CardGroup className="mt-4 mx-5 z-0">
+        <Row xs={1} sm={2} md={4} className="g-4 mt-4 z-0">
+          {loading &&
+            Array.from({ length: 50 }).map((_, idx) => (
+              <ProductPlaceholders key={idx} />
+            ))}
+          {!loading &&
+            products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+        </Row>
+      </CardGroup>
     </>
   );
 };

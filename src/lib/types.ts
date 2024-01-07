@@ -40,3 +40,8 @@ export type Product = {
   price: number;
   quantity: string;
 };
+
+export type CartItem = {
+  id: number;
+  quantity: number;
+};
