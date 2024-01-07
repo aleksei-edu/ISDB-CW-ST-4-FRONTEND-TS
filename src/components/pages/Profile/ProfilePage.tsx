@@ -1,25 +1,35 @@
 import { useContext, useState } from "react";
 import { Accordion, Button, Card, Col, Row, Table } from "react-bootstrap";
-import { UserContext } from "../../../context/UserContext";
 import { useGetUserInfo } from "../../../hooks/useGetUserInfo";
 import TrainerForm from "./TrainerForm";
+import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router';
 
 const ProfilePage = () => {
   const { user, updateUser } = useGetUserInfo();
   const [showTrainerForm, setShowTrainerForm] = useState(false);
   const imgSrc = user?.avatar ? user?.avatar : "../../../public/user.png";
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const navigate = useNavigate();
+
+  const signOut = () => {
+    removeCookie("token");
+    localStorage.removeItem("cartItems");
+    localStorage.removeItem("username");
+    navigate("/sign-in");
+  };
   return (
     <div className="container">
       <Row className="mt-5 justify-content-md-center text-center text-wrap">
-        <Col md="5"></Col>
-        <Col md="2">
+        <Col xs={2} sm={3} md={5} ></Col>
+        <Col>
           <h1 className="text-center"> </h1>
           <img
             src={imgSrc}
             className="img-fluid border border-3 rounded-circle"
           />
         </Col>
-        <Col md="5"></Col>
+        <Col xs={2} sm={3} md={5}></Col>
 
         <Col md="3"></Col>
         <Col md="6">
@@ -125,9 +135,26 @@ const ProfilePage = () => {
           </Accordion>
         </Col>
         <Col md="3"></Col>
+        <Col md="3"></Col>
+        <Col md="6">
+          <Button
+            variant="danger"
+            size="lg"
+            className="mt-2 w-100"
+            onClick={() => signOut()}
+          >
+            Sign Out
+          </Button>
+        </Col>
+        <Col md="3"></Col>
       </Row>
 
-      <TrainerForm show={showTrainerForm} setShow={setShowTrainerForm} updateUser={updateUser} trainer={user?.trainer} />
+      <TrainerForm
+        show={showTrainerForm}
+        setShow={setShowTrainerForm}
+        updateUser={updateUser}
+        trainer={user?.trainer}
+      />
     </div>
   );
 };
