@@ -58,7 +58,7 @@ export type Product = {
   pokemonImageLink: string;
   types: string[];
   price: number;
-  quantity: string;
+  quantity: number;
 };
 
 export type CartItem = {
@@ -82,4 +82,32 @@ export type UserInfo = {
   username: string;
   avatar: string | null;
   trainer: TrainerInfo | null;
+}
+
+export type OrderDetails = {
+  id: number;
+  status: "PROCESSING" | "DONE" | "PAID" | "CANCELLED";
+  totalPrice: number;
+  orderDate: Date;
+  orderItems: Product[];
+}
+
+
+export type PokemonDetails = {
+  id: number;
+  name: string;
+  nationalNum: number;
+  pokemonImageLink: string;
+  types: string[];
+  species: string;
+  height: number;
+  weight: number;
+  hp: number;
+  attack: number;
+  defense: number;
+  specialAttack: number;
+  specialDefense: number;
+  speed: number;
+  price: number;
+  quantity: number;
 }

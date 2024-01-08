@@ -44,7 +44,7 @@ const ErrorPage: React.FC = () => {
                   </div>
                   <div className="card-footer text-center bg-dark">
                     <Link
-                      to="/shop"
+                      to="/"
                       className=" fs-3 text-uppercase btn btn-outline-light mt-3"
                     >
                       Back to Shop

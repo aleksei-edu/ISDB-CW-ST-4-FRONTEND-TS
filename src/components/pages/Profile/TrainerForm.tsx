@@ -36,21 +36,11 @@ interface IPopover {
 const TrainerForm = (props: Props) => {
   const { show, setShow, updateUser, trainer } = props;
   const handleClose = () => setShow(false);
-  console.log(trainer);
+  
 
   const { addError } = useContext<IErrorContext>(ErrorContext);
   const { headers } = useGetToken();
-  //   const defaultValues: TrainerFormValues = {
-  //     firstName: user.trainer.firstName,
-  //     lastName: user.trainer.lastName,
-  //     gender: user.trainer.gender,
-  //     level: user.trainer.level,
-  //     physicalSweeper: user.trainer.physicalSweeper,
-  //     specialSweeper: user.trainer.specialSweeper,
-  //     wall: user.trainer.wall,
-  //     physicalTank: user.trainer.physicalTank,
-  //     specialTank: user.trainer.specialTank,
-  //   } ;
+ 
   const defaultValues: TrainerFormValues = {};
 
   const {

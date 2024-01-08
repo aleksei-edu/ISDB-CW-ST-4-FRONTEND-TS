@@ -1,7 +1,8 @@
 import { Button, Card, Col } from "react-bootstrap";
 import { Product } from "../../../lib/types";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { IShopContext, ShopContext } from "../../../context/ShopContext";
+import ProductModel from "./ProductModel";
 
 interface Props {
   product: Product;
@@ -37,10 +38,12 @@ const ProductCard: React.FC<Props> = (props: Props) => {
   const { addToCart, getCartItemsCount } =
     useContext<IShopContext>(ShopContext);
   const count = getCartItemsCount(id);
+
+  const [showDetails, setShowDetails] = useState(false);
   return (
     <Col>
       <Card>
-        <Card.Img variant="top" src={imgUrl} alt={name} />
+        <Card.Img variant="top" src={imgUrl} alt={name} onClick={()=> setShowDetails(true)}/>
         <Card.Body>
           <Card.Title>{name}</Card.Title>
           <Card.Subtitle className="mb-2 fw-bold text-muted">
@@ -61,22 +64,28 @@ const ProductCard: React.FC<Props> = (props: Props) => {
                 )
             )}
           </Card.Text>
-          {count > 0 && (
+          {count > 0 && quantity !== 0 && (
             <Button
               variant="success"
-              className="me-2"
+              className="me-2 fw-bold"
               onClick={() => addToCart(id)}
             >
               Add to Cart ({count})
             </Button>
           )}
-          {count === 0 && (
-            <Button variant="primary" onClick={() => addToCart(id)}>
+          {count === 0 && quantity !== 0 && (
+            <Button variant="primary" className="fw-bold" onClick={() => addToCart(id)}>
               Add to Cart
+            </Button>
+          )}
+          {quantity === 0 && (
+            <Button variant="danger" className="fw-bold">
+              Out of Stock
             </Button>
           )}
         </Card.Body>
       </Card>
+      <ProductModel show={showDetails} product={props.product} onHide={()=> setShowDetails(false)}/>
     </Col>
   );
 };

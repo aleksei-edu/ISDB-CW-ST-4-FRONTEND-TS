@@ -22,7 +22,7 @@ const Navbar = ({children}) => {
         className="bg-body-tertiary fs-5"
       >
         <Container>
-          <Link to={"/shop"} className="navbar-brand">
+          <Link to={"/"} className="navbar-brand">
             <BNav.Brand>
               <img
                 src="/public/pikachu.png"
@@ -34,7 +34,7 @@ const Navbar = ({children}) => {
             </BNav.Brand>
           </Link>
           <Nav className="justify-content-center">
-            <Link to="shop" className="nav-link">
+            <Link to="/" className="nav-link">
               Shop
             </Link>
             <div className="nav-link">|</div>

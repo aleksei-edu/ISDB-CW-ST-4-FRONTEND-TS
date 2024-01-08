@@ -24,7 +24,7 @@ const ShopPage: React.FC = () => {
               <ProductPlaceholders key={idx} />
             ))}
           {!loading &&
-            products.map((product) => (
+            products.sort((a, b) => a.nationalNum - b.nationalNum).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
         </Row>

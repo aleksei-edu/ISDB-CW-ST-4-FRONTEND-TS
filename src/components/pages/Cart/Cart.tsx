@@ -11,8 +11,12 @@ import { useNavigate } from "react-router-dom";
 const Cart = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { getCartItemsCount, getTotalCartItemsCount, getTotalCartAmount } =
-    useContext<IShopContext>(ShopContext);
+  const {
+    getCartItemsCount,
+    getTotalCartItemsCount,
+    getTotalCartAmount,
+    checkout,
+  } = useContext<IShopContext>(ShopContext);
   const totalCount = getTotalCartItemsCount();
   const { products } = useGetProducts({ setLoading: setLoading });
   const totalPrice = getTotalCartAmount();
@@ -33,7 +37,7 @@ const Cart = () => {
         {loading &&
           Array.from({ length: 5 }).map((_, idx) => {
             return (
-              <Row className="justify-content-md-center">
+              <Row key={idx} className="justify-content-md-center">
                 <Col xs lg="2"></Col>
                 <CartPlaceholders key={idx} />
                 <Col xs lg="2"></Col>
@@ -44,14 +48,14 @@ const Cart = () => {
           products.map((product) => {
             if (getCartItemsCount(product.id) !== 0)
               return (
-                <Row className="justify-content-md-center">
+                <Row key={product.id} className="justify-content-md-center">
                   <Col xs lg="2"></Col>
                   <CartCard key={product.id} product={product} />
                   <Col xs lg="2"></Col>
                 </Row>
               );
           })}
-        {!loading && (
+        {!loading && totalCount !== 0 && (
           <Row className="justify-content-md-center">
             <Col xs lg="2"></Col>
             <div className="col-md-4 position-relative">
@@ -61,12 +65,22 @@ const Cart = () => {
                     Subtotal: ${totalPrice}
                   </h5>
                 </div>
-                <div className="pb-4 col-md-12 row">
-                  <div className="col-md-6 text-center">
-                    <button className="btn btn-outline-dark w-100" onClick={()=> navigate('/shop')}>Continue Shopping</button>
+                <div className="pb-4 col-md-12 row ">
+                  <div className="col-4 col-md-6 text-center">
+                    <button
+                      className="btn btn-outline-dark w-100"
+                      onClick={() => navigate("/shop")}
+                    >
+                      Continue Shopping
+                    </button>
                   </div>
-                  <div className="col-md-6 text-center">
-                    <button className="btn btn-outline-dark w-100">Checkout</button>
+                  <div className="col-4 col-md-6 text-center">
+                    <button
+                      className="btn btn-outline-dark w-100"
+                      onClick={() => checkout()}
+                    >
+                      Checkout
+                    </button>
                   </div>
                 </div>
               </div>

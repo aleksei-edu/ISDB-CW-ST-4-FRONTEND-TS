@@ -56,7 +56,7 @@ const LoginForm: React.FC = () => {
           );
           setCookies("token", response.data.token);
           localStorage.setItem("username", data.username);
-          navigate("/shop");
+          navigate("/");
         }
       })
       .catch((error) => {

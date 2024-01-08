@@ -14,6 +14,7 @@ import Navbar from './components/Navbar/Navbar';
 import Root from './components/pages/Root';
 import ProfilePage from './components/pages/Profile/ProfilePage';
 import PurchasesPage from './components/pages/Purchases/PurchasesPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const router = createBrowserRouter([
   {
@@ -24,10 +25,10 @@ const router = createBrowserRouter([
       { path: "sign-in", element: <LoginForm /> },
       { path: "sign-up", element: <RegistrationForm /> },
       { element: <Root />, children: [
-          { path: "shop", element: <ShopPage /> },
-          { path: "cart", element: <Cart />},
-          { path: "profile", element: <ProfilePage />},
-          { path: "purchases", element: <PurchasesPage />}
+          { path: "/", element: <ProtectedRoute><ShopPage /></ProtectedRoute> },
+          { path: "cart", element: <ProtectedRoute><Cart /></ProtectedRoute>},
+          { path: "profile", element: <ProtectedRoute><ProfilePage /></ProtectedRoute>},
+          { path: "purchases", element: <ProtectedRoute><PurchasesPage /></ProtectedRoute>}
         ]
       },
     ]
