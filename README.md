@@ -1,3 +1,3 @@
 # PokeShop Frontend
 # Video demonstration
-![Video Demo][./assets/PokeShop.gif]
+![Video Demo](./src/assets/PokeShop.gif)
