@@ -157,12 +157,20 @@ const ProductModel = (props: Props) => {
                 </tr>
                 <tr>
                   {count > 0 && product.quantity !== 0 && (
-                    <td colSpan={2} onClick={()=>addToCart(product.id)} className="text-center table-success fw-bold">
+                    <td
+                      colSpan={2}
+                      onClick={() => addToCart(product.id)}
+                      className="text-center table-success fw-bold"
+                    >
                       Add to Cart ({count})
                     </td>
                   )}
                   {count === 0 && product.quantity !== 0 && (
-                    <td colSpan={2} onClick={()=>addToCart(product.id)} className="text-center table-primary fw-bold">
+                    <td
+                      colSpan={2}
+                      onClick={() => addToCart(product.id)}
+                      className="text-center table-primary fw-bold"
+                    >
                       Add to Cart
                     </td>
                   )}
